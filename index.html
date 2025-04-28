@@ -2,275 +2,232 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mi Tienda Blockspin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda Blockspin</title>
     <style>
         body {
-            background-color: #121212;
-            color: #e0e0e0;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
         .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .menu {
-            background: #1e1e1e;
-            border-radius: 10px;
             padding: 20px;
-            flex: 1 1 300px;
-            max-width: 400px;
-            box-shadow: 0 0 10px #ff4b2b;
+            max-width: 900px;
+            margin: auto;
         }
-
-        .menu h2 {
-            margin-bottom: 15px;
-        }
-
-        .menu button {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            border: none;
-            padding: 10px 20px;
-            color: white;
-            margin: 8px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.3s;
-            width: 100%;
-        }
-
-        .menu button:hover {
-            transform: scale(1.05);
-        }
-
-        #cart {
-            margin: 40px auto 0;
-            padding: 20px;
-            background: #1e1e1e;
-            border-radius: 10px;
-            box-shadow: 0 0 10px #ff4b2b;
-            max-width: 600px;
-        }
-
-        #cart h2 {
-            margin-bottom: 15px;
-        }
-
-        #cartItems {
-            text-align: left;
-        }
-
-        #chatbox {
-            background: #1f1f1f;
-            padding: 15px;
-            border-radius: 10px;
-            height: 300px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            box-shadow: inset 0 0 5px #ff4b2b;
-        }
-
-        #contact {
-            margin-top: 40px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        input[type="text"] {
-            padding: 10px;
-            width: 80%;
-            border-radius: 5px;
-            border: none;
-            margin-bottom: 10px;
-        }
-
-        #notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #00c851;
-            padding: 10px 20px;
-            border-radius: 8px;
+        .hidden {
             display: none;
-            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 0;
+            background-color: #00ffea;
+            border: none;
+            color: black;
             font-weight: bold;
-            z-index: 999;
+            cursor: pointer;
+            border-radius: 10px;
         }
-
-        #notification.error {
-            background: #ff4444;
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #ccc;
         }
-
-        /* Responsividad extra */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
+        .menu, .chat, .store {
+            margin-top: 20px;
+            background: #1c1c1c;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        .chat-messages {
+            background: #333;
+            height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .chat input {
+            width: 80%;
+            display: inline-block;
+        }
+        .chat button {
+            width: 18%;
+            display: inline-block;
+        }
+        .logout-btn {
+            background-color: red;
+            color: white;
+        }
+        @media (max-width: 600px) {
+            .chat input, .chat button {
+                width: 100%;
+                margin-top: 5px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div id="notification"></div>
+<div class="container">
+    <!-- Login / Registro -->
+    <div id="auth" class="auth">
+        <h2>Inicia Sesión o Regístrate</h2>
+        <input type="text" id="username" placeholder="Usuario Roblox">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button onclick="register()">Registrar</button>
+        <button onclick="login()">Iniciar Sesión</button>
+    </div>
 
-    <h1>Bienvenido a la Tienda de Chips y Armas 🔥</h1>
-
-    <!-- Menús separados -->
-    <div class="container">
-        <!-- Dinero del Juego -->
+    <!-- Tienda principal -->
+    <div id="main" class="hidden">
+        <h2 id="welcome"></h2>
+        <button onclick="logout()" class="logout-btn">Cerrar sesión</button>
+        
         <div class="menu">
-            <h2>Compra con Dinero del Juego</h2>
-            <p>Recuerda tener mínimo 16.8k en mano para recibir 12k exactos.</p>
-            <button onclick="addToCart('16 Chips (12k InGame)', 'Dinero Juego')">Comprar 16 Chips</button>
-            <button onclick="addToCart('Arma Especial', 'Dinero Juego')">Comprar Arma</button>
+            <button onclick="showStore('juego')">Dinero de Juego</button>
+            <button onclick="showStore('real')">Dinero Real</button>
         </div>
 
-        <!-- Dinero Real -->
-        <div class="menu">
-            <h2>Compra con Dinero Real</h2>
-            <p>16 Chips = 1 USD | Arma = 1 USD</p>
-            <button onclick="addToCart('16 Chips', 'Dinero Real')">Comprar 16 Chips</button>
-            <button onclick="addToCart('Arma Especial', 'Dinero Real')">Comprar Arma</button>
+        <!-- Tienda Dinero de Juego -->
+        <div id="store-juego" class="store hidden">
+            <h3>Compra con Dinero del Juego</h3>
+            <p>16 Chips - 12k de dinero (Debes tener 16.8k en mano)</p>
+            <button onclick="addToCart('chips-juego')">Añadir Chips</button>
+            <p>Armas especiales - Precio en dinero del juego</p>
+            <button onclick="addToCart('armas-juego')">Añadir Armas</button>
+        </div>
+
+        <!-- Tienda Dinero Real -->
+        <div id="store-real" class="store hidden">
+            <h3>Compra con Dinero Real</h3>
+            <p>16 Chips - 1 dólar</p>
+            <button onclick="addToCart('chips-real')">Añadir Chips</button>
+            <p>Armas especiales - 1 dólar</p>
+            <button onclick="addToCart('armas-real')">Añadir Armas</button>
+        </div>
+
+        <!-- Chat -->
+        <div class="chat">
+            <h3>Chat</h3>
+            <div id="chatMessages" class="chat-messages"></div>
+            <input type="text" id="chatInput" placeholder="Escribe tu mensaje...">
+            <button onclick="sendMessage()">Enviar</button>
         </div>
     </div>
+</div>
 
-    <!-- Carrito -->
-    <div id="cart">
-        <h2>Carrito</h2>
-        <ul id="cartItems"></ul>
-    </div>
+<script>
+    let currentUser = null;
+    let clientNumber = Math.floor(Math.random() * 100) + 1;
 
-    <!-- Chat -->
-    <div id="contact">
-        <h2>Chat en Vivo</h2>
+    function saveUser(username, password) {
+        localStorage.setItem('user_' + username, password);
+    }
 
-        <div id="chatbox"></div>
+    function getUserPassword(username) {
+        return localStorage.getItem('user_' + username);
+    }
 
-        <input type="text" id="userInput" placeholder="Escribe tu mensaje..." onkeypress="if(event.key==='Enter') sendMessage()">
-        <br>
-        <button onclick="sendMessage()">Enviar</button>
-        <button onclick="clearChat()">Borrar Chat</button>
-    </div>
-
-    <!-- EmailJS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
-    <script>
-        let userId;
-        let cart = [];
-
-        (function() {
-            emailjs.init("AQUÍ_TU_PUBLIC_KEY"); // 👈 cambia aquí
-        })();
-
-        function addToCart(item, metodo) {
-            cart.push({ item: item, metodo: metodo });
-            updateCart();
-        }
-
-        function updateCart() {
-            let cartItems = document.getElementById('cartItems');
-            cartItems.innerHTML = "";
-            cart.forEach(producto => {
-                let li = document.createElement('li');
-                li.innerText = `${producto.item} - (${producto.metodo})`;
-                cartItems.appendChild(li);
-            });
-        }
-
-        window.onload = function() {
-            if (localStorage.getItem('userId')) {
-                userId = localStorage.getItem('userId');
+    function register() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        if (username && password) {
+            if (getUserPassword(username)) {
+                alert('El usuario ya existe.');
             } else {
-                userId = 'user_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('userId', userId);
+                saveUser(username, password);
+                alert('Registrado correctamente.');
             }
+        } else {
+            alert('Rellena todos los campos.');
+        }
+    }
 
-            if (localStorage.getItem('chatHistory_' + userId)) {
-                document.getElementById('chatbox').innerHTML = localStorage.getItem('chatHistory_' + userId);
+    function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const savedPassword = getUserPassword(username);
+        if (password === savedPassword) {
+            currentUser = username;
+            localStorage.setItem('loggedInUser', username);
+            document.getElementById('auth').classList.add('hidden');
+            document.getElementById('main').classList.remove('hidden');
+            document.getElementById('welcome').innerText = `Bienvenido ${username}`;
+            loadChat();
+        } else {
+            alert('Usuario o contraseña incorrectos.');
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('loggedInUser');
+        location.reload();
+    }
+
+    function showStore(type) {
+        document.getElementById('store-juego').classList.add('hidden');
+        document.getElementById('store-real').classList.add('hidden');
+        if (type === 'juego') {
+            document.getElementById('store-juego').classList.remove('hidden');
+        } else if (type === 'real') {
+            document.getElementById('store-real').classList.remove('hidden');
+        }
+    }
+
+    function addToCart(item) {
+        let email = 'discordsebas15@gmail.com';
+        let subject = encodeURIComponent('Nuevo pedido');
+        let body = encodeURIComponent('Usuario: ' + currentUser + '\nProducto: ' + item);
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        if (message !== '') {
+            const chatMessages = document.getElementById('chatMessages');
+            let role = 'Cliente' + clientNumber;
+            if (currentUser === 'sebi191937') {
+                role = 'Vendedor';
             }
+            const newMessage = document.createElement('div');
+            newMessage.textContent = `${role} (${currentUser}): ${message}`;
+            chatMessages.appendChild(newMessage);
+            input.value = '';
+            saveChat();
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
+    }
 
-        function sendMessage() {
-            let input = document.getElementById('userInput');
-            let message = input.value.trim();
-            if (message !== "") {
-                let chatbox = document.getElementById('chatbox');
+    function saveChat() {
+        const chat = document.getElementById('chatMessages').innerHTML;
+        localStorage.setItem('chatHistory', chat);
+    }
 
-                let userMsg = document.createElement('div');
-                userMsg.style.margin = '5px 0';
-                userMsg.innerHTML = '<b>Cliente:</b> ' + message;
-                chatbox.appendChild(userMsg);
-                chatbox.scrollTop = chatbox.scrollHeight;
-                input.value = '';
-
-                saveChat();
-                sendEmailNotification(message);
-
-                setTimeout(() => {
-                    let botMsg = document.createElement('div');
-                    botMsg.style.margin = '5px 0';
-                    botMsg.innerHTML = '<b>Vendedor:</b> Gracias por tu mensaje, pronto te responderemos.';
-                    chatbox.appendChild(botMsg);
-                    chatbox.scrollTop = chatbox.scrollHeight;
-                    saveChat();
-                }, 1000);
-            }
+    function loadChat() {
+        const chat = localStorage.getItem('chatHistory');
+        if (chat) {
+            document.getElementById('chatMessages').innerHTML = chat;
         }
+    }
 
-        function saveChat() {
-            let chatContent = document.getElementById('chatbox').innerHTML;
-            localStorage.setItem('chatHistory_' + userId, chatContent);
+    // Autologin
+    window.onload = function() {
+        const savedUser = localStorage.getItem('loggedInUser');
+        if (savedUser) {
+            currentUser = savedUser;
+            document.getElementById('auth').classList.add('hidden');
+            document.getElementById('main').classList.remove('hidden');
+            document.getElementById('welcome').innerText = `Bienvenido ${savedUser}`;
+            loadChat();
         }
-
-        function clearChat() {
-            if (confirm('¿Seguro que quieres borrar todo el chat?')) {
-                document.getElementById('chatbox').innerHTML = '';
-                localStorage.removeItem('chatHistory_' + userId);
-            }
-        }
-
-        function sendEmailNotification(message) {
-            emailjs.send("AQUÍ_TU_SERVICE_ID", "AQUÍ_TU_TEMPLATE_ID", {
-                user_id: userId,
-                user_message: message
-            })
-            .then(function(response) {
-               console.log('Correo enviado!', response.status, response.text);
-               showNotification("Mensaje enviado correctamente ✅");
-            }, function(error) {
-               console.log('Fallo al enviar.', error);
-               showNotification("Error al enviar el mensaje ❌", true);
-            });
-        }
-
-        function showNotification(texto, error = false) {
-            let notif = document.getElementById('notification');
-            notif.textContent = texto;
-            if (error) {
-                notif.classList.add('error');
-            } else {
-                notif.classList.remove('error');
-            }
-            notif.style.display = 'block';
-            setTimeout(() => {
-                notif.style.display = 'none';
-            }, 3000);
-        }
-    </script>
+    }
+</script>
 
 </body>
 </html>
-
