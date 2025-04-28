@@ -2,143 +2,225 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda Blockspin</title>
+    <title>Mi Tienda Blockspin</title>
     <style>
         body {
             background-color: #121212;
-            color: #f0f0f0;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #1f1f1f;
-            padding: 20px;
+            color: #e0e0e0;
+            font-family: 'Poppins', sans-serif;
             text-align: center;
         }
-        h1 {
-            margin: 0;
-            color: #ff0000;
-        }
         .menu {
-            display: flex;
-            justify-content: center;
             margin: 30px;
-            gap: 20px;
+        }
+        .menu h2 {
+            margin-bottom: 15px;
         }
         .menu button {
-            padding: 20px;
-            font-size: 18px;
-            background-color: #ff0000;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
             border: none;
+            padding: 10px 20px;
+            color: white;
+            margin: 5px;
             border-radius: 10px;
             cursor: pointer;
-            color: white;
+            transition: 0.3s;
         }
-        .store {
-            display: none;
-            margin: 20px;
+        .menu button:hover {
+            transform: scale(1.05);
         }
-        .item {
-            background-color: #1f1f1f;
-            margin: 10px;
+        #cart {
+            margin-top: 30px;
+            padding: 20px;
+            background: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ff4b2b;
+        }
+        #chatbox {
+            background: #1f1f1f;
             padding: 15px;
-            border-radius: 8px;
-        }
-        .item button {
-            margin-top: 10px;
-            background-color: #ff0000;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
+            border-radius: 10px;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            box-shadow: inset 0 0 5px #ff4b2b;
         }
         #contact {
-            margin: 30px;
-            padding: 20px;
-            background-color: #1f1f1f;
-            border-radius: 10px;
-            display: none;
+            margin-top: 40px;
         }
-        input, textarea {
-            width: 100%;
+        input[type="text"] {
             padding: 10px;
-            margin: 5px 0;
+            width: 80%;
             border-radius: 5px;
             border: none;
+            margin-bottom: 10px;
         }
-        input[type="submit"] {
-            background-color: #ff0000;
+        #notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00c851;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: none;
             color: white;
-            cursor: pointer;
+            font-weight: bold;
+            z-index: 999;
+        }
+        #notification.error {
+            background: #ff4444;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Tienda Blockspin</h1>
-        <p>Compra Chips y Armas</p>
-    </header>
 
+    <div id="notification"></div>
+
+    <h1>Bienvenido a la Tienda de Chips y Armas 🔥</h1>
+
+    <!-- Menú de compra por dinero del juego -->
     <div class="menu">
-        <button onclick="showStore('game')">Comprar con Dinero del Juego</button>
-        <button onclick="showStore('real')">Comprar con Dinero Real</button>
+        <h2>Compra con Dinero del Juego</h2>
+        <p>Recuerda tener mínimo 16.8k en mano para recibir 12k exactos.</p>
+        <button onclick="addToCart('16 Chips (12k InGame)', 'Dinero Juego')">Comprar 16 Chips</button>
+        <button onclick="addToCart('Arma Especial', 'Dinero Juego')">Comprar Arma</button>
     </div>
 
-    <div id="store-game" class="store">
-        <h2>Dinero del Juego</h2>
-        <div class="item">
-            <h3>16 Chips - 12k</h3>
-            <p><b>Necesitas tener 16.8k en mano.</b></p>
-            <button onclick="addToCart('16 Chips - Juego')">Añadir al Carrito</button>
-        </div>
-        <div class="item">
-            <h3>Arma Especial</h3>
-            <p>Precio: 12k (en el juego)</p>
-            <button onclick="addToCart('Arma Especial - Juego')">Añadir al Carrito</button>
-        </div>
+    <!-- Menú de compra por dinero real -->
+    <div class="menu">
+        <h2>Compra con Dinero Real</h2>
+        <p>16 Chips = 1 USD | Arma = 1 USD</p>
+        <button onclick="addToCart('16 Chips', 'Dinero Real')">Comprar 16 Chips</button>
+        <button onclick="addToCart('Arma Especial', 'Dinero Real')">Comprar Arma</button>
     </div>
 
-    <div id="store-real" class="store">
-        <h2>Dinero Real</h2>
-        <div class="item">
-            <h3>16 Chips - $1 USD</h3>
-            <button onclick="addToCart('16 Chips - Real')">Añadir al Carrito</button>
-        </div>
-        <div class="item">
-            <h3>Arma Especial - $1 USD</h3>
-            <button onclick="addToCart('Arma Especial - Real')">Añadir al Carrito</button>
-        </div>
+    <!-- Carrito -->
+    <div id="cart">
+        <h2>Carrito</h2>
+        <ul id="cartItems"></ul>
     </div>
 
+    <!-- Chat -->
     <div id="contact">
-        <h2>Contacto</h2>
-        <p>Nos comunicaremos contigo aquí:</p>
-        <form action="https://formspree.io/f/{tu_form_id}" method="POST">
-            <input type="text" name="nombre" placeholder="Tu nombre" required>
-            <input type="email" name="email" placeholder="Tu correo" required>
-            <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
-            <input type="submit" value="Enviar">
-        </form>
+        <h2>Chat en Vivo</h2>
+
+        <div id="chatbox"></div>
+
+        <input type="text" id="userInput" placeholder="Escribe tu mensaje..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <br>
+        <button onclick="sendMessage()">Enviar</button>
+        <button onclick="clearChat()">Borrar Chat</button>
     </div>
+
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <script>
-        function showStore(type) {
-            document.getElementById('store-game').style.display = 'none';
-            document.getElementById('store-real').style.display = 'none';
-            if (type === 'game') {
-                document.getElementById('store-game').style.display = 'block';
+        let userId;
+        let cart = [];
+
+        // Inicializar EmailJS
+        (function() {
+            emailjs.init("AQUÍ_TU_PUBLIC_KEY"); // 👈 Pega tu Public Key aquí
+        })();
+
+        function addToCart(item, metodo) {
+            cart.push({ item: item, metodo: metodo });
+            updateCart();
+        }
+
+        function updateCart() {
+            let cartItems = document.getElementById('cartItems');
+            cartItems.innerHTML = "";
+            cart.forEach(producto => {
+                let li = document.createElement('li');
+                li.innerText = `${producto.item} - (${producto.metodo})`;
+                cartItems.appendChild(li);
+            });
+        }
+
+        window.onload = function() {
+            if (localStorage.getItem('userId')) {
+                userId = localStorage.getItem('userId');
             } else {
-                document.getElementById('store-real').style.display = 'block';
+                userId = 'user_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('userId', userId);
+            }
+
+            if (localStorage.getItem('chatHistory_' + userId)) {
+                document.getElementById('chatbox').innerHTML = localStorage.getItem('chatHistory_' + userId);
             }
         }
 
-        function addToCart(item) {
-            alert('Producto añadido: ' + item + '\nTe contactaremos en la sección de abajo.');
-            document.getElementById('contact').style.display = 'block';
+        function sendMessage() {
+            let input = document.getElementById('userInput');
+            let message = input.value.trim();
+            if (message !== "") {
+                let chatbox = document.getElementById('chatbox');
+
+                let userMsg = document.createElement('div');
+                userMsg.style.margin = '5px 0';
+                userMsg.innerHTML = '<b>Cliente:</b> ' + message;
+                chatbox.appendChild(userMsg);
+                chatbox.scrollTop = chatbox.scrollHeight;
+                input.value = '';
+
+                saveChat();
+                sendEmailNotification(message);
+
+                // Respuesta automática
+                setTimeout(() => {
+                    let botMsg = document.createElement('div');
+                    botMsg.style.margin = '5px 0';
+                    botMsg.innerHTML = '<b>Vendedor:</b> Gracias por tu mensaje, pronto te responderemos.';
+                    chatbox.appendChild(botMsg);
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                    saveChat();
+                }, 1000);
+            }
+        }
+
+        function saveChat() {
+            let chatContent = document.getElementById('chatbox').innerHTML;
+            localStorage.setItem('chatHistory_' + userId, chatContent);
+        }
+
+        function clearChat() {
+            if (confirm('¿Seguro que quieres borrar todo el chat?')) {
+                document.getElementById('chatbox').innerHTML = '';
+                localStorage.removeItem('chatHistory_' + userId);
+            }
+        }
+
+        function sendEmailNotification(message) {
+            emailjs.send("AQUÍ_TU_SERVICE_ID", "AQUÍ_TU_TEMPLATE_ID", {
+                user_id: userId,
+                user_message: message
+            })
+            .then(function(response) {
+               console.log('Correo enviado!', response.status, response.text);
+               showNotification("Mensaje enviado correctamente ✅");
+            }, function(error) {
+               console.log('Fallo al enviar.', error);
+               showNotification("Error al enviar el mensaje ❌", true);
+            });
+        }
+
+        function showNotification(texto, error = false) {
+            let notif = document.getElementById('notification');
+            notif.textContent = texto;
+            if (error) {
+                notif.classList.add('error');
+            } else {
+                notif.classList.remove('error');
+            }
+            notif.style.display = 'block';
+            setTimeout(() => {
+                notif.style.display = 'none';
+            }, 3000);
         }
     </script>
+
 </body>
 </html>
+
