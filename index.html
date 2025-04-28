@@ -1,233 +1,292 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda Blockspin</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #0a0a0a;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            padding: 20px;
-            max-width: 900px;
-            margin: auto;
-        }
-        .hidden {
-            display: none;
-        }
-        button {
-            padding: 10px 20px;
-            margin: 10px 0;
-            background-color: #00ffea;
-            border: none;
-            color: black;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 10px;
-        }
-        input {
-            padding: 10px;
-            margin: 10px 0;
-            width: 100%;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-        }
-        .menu, .chat, .store {
-            margin-top: 20px;
-            background: #1c1c1c;
-            padding: 20px;
-            border-radius: 15px;
-        }
-        .chat-messages {
-            background: #333;
-            height: 300px;
-            overflow-y: scroll;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .chat input {
-            width: 80%;
-            display: inline-block;
-        }
-        .chat button {
-            width: 18%;
-            display: inline-block;
-        }
-        .logout-btn {
-            background-color: red;
-            color: white;
-        }
-        @media (max-width: 600px) {
-            .chat input, .chat button {
-                width: 100%;
-                margin-top: 5px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda Blockspin - Sebi191937</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #0d0d0d;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .container {
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .hidden {
+      display: none;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      background: linear-gradient(45deg, #00f2ff, #1bff8a);
+      border: none;
+      color: #000;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      box-shadow: 0 0 10px #00ffe1, 0 0 20px #1bff8a;
+      transform: scale(1.05);
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #555;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .menu, .store, .chat, .clients {
+      margin-top: 20px;
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #00ffe1;
+    }
+    .chat-messages {
+      background: #0d0d0d;
+      height: 300px;
+      overflow-y: scroll;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .chat input {
+      width: 78%;
+      display: inline-block;
+    }
+    .chat button {
+      width: 20%;
+      display: inline-block;
+    }
+    .delete-btn {
+      background: red;
+      color: white;
+      margin-top: 10px;
+      width: 100%;
+    }
+    .logout-btn {
+      background: red;
+      color: white;
+    }
+    @media (max-width: 600px) {
+      .chat input, .chat button {
+        width: 100%;
+        margin-top: 5px;
+      }
+    }
+  </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Login / Registro -->
-    <div id="auth" class="auth">
-        <h2>Inicia Sesión o Regístrate</h2>
-        <input type="text" id="username" placeholder="Usuario Roblox">
-        <input type="password" id="password" placeholder="Contraseña">
-        <button onclick="register()">Registrar</button>
-        <button onclick="login()">Iniciar Sesión</button>
+  <!-- LOGIN / REGISTRO -->
+  <div id="auth" class="auth">
+    <h2>Inicia Sesión o Regístrate</h2>
+    <input type="text" id="username" placeholder="Usuario Roblox">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="register()">Registrar</button>
+    <button onclick="login()">Iniciar Sesión</button>
+  </div>
+
+  <!-- TIENDA Y CHAT -->
+  <div id="main" class="hidden">
+    <h2 id="welcome"></h2>
+    <button onclick="logout()" class="logout-btn">Cerrar sesión</button>
+
+    <div class="menu">
+      <button onclick="showStore('juego')">Dinero de Juego</button>
+      <button onclick="showStore('real')">Dinero Real</button>
     </div>
 
-    <!-- Tienda principal -->
-    <div id="main" class="hidden">
-        <h2 id="welcome"></h2>
-        <button onclick="logout()" class="logout-btn">Cerrar sesión</button>
-        
-        <div class="menu">
-            <button onclick="showStore('juego')">Dinero de Juego</button>
-            <button onclick="showStore('real')">Dinero Real</button>
-        </div>
-
-        <!-- Tienda Dinero de Juego -->
-        <div id="store-juego" class="store hidden">
-            <h3>Compra con Dinero del Juego</h3>
-            <p>16 Chips - 12k de dinero (Debes tener 16.8k en mano)</p>
-            <button onclick="addToCart('chips-juego')">Añadir Chips</button>
-            <p>Armas especiales - Precio en dinero del juego</p>
-            <button onclick="addToCart('armas-juego')">Añadir Armas</button>
-        </div>
-
-        <!-- Tienda Dinero Real -->
-        <div id="store-real" class="store hidden">
-            <h3>Compra con Dinero Real</h3>
-            <p>16 Chips - 1 dólar</p>
-            <button onclick="addToCart('chips-real')">Añadir Chips</button>
-            <p>Armas especiales - 1 dólar</p>
-            <button onclick="addToCart('armas-real')">Añadir Armas</button>
-        </div>
-
-        <!-- Chat -->
-        <div class="chat">
-            <h3>Chat</h3>
-            <div id="chatMessages" class="chat-messages"></div>
-            <input type="text" id="chatInput" placeholder="Escribe tu mensaje...">
-            <button onclick="sendMessage()">Enviar</button>
-        </div>
+    <!-- Tienda Dinero Juego -->
+    <div id="store-juego" class="store hidden">
+      <h3>Compra con Dinero del Juego</h3>
+      <p>16 Chips = 12k (Necesitas 16.8k en mano)</p>
+      <button onclick="addToCart('chips-juego')">Comprar Chips</button>
+      <p>Armas especiales - dinero de juego</p>
+      <button onclick="addToCart('armas-juego')">Comprar Armas</button>
     </div>
+
+    <!-- Tienda Dinero Real -->
+    <div id="store-real" class="store hidden">
+      <h3>Compra con Dinero Real</h3>
+      <p>16 Chips = 1 dólar</p>
+      <button onclick="addToCart('chips-real')">Comprar Chips</button>
+      <p>Armas especiales - 1 dólar</p>
+      <button onclick="addToCart('armas-real')">Comprar Armas</button>
+    </div>
+
+    <!-- CLIENTES (solo para vendedor) -->
+    <div id="clients" class="clients hidden">
+      <h3>Clientes Activos</h3>
+      <div id="clientList"></div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat">
+      <h3>Chat</h3>
+      <div id="chatMessages" class="chat-messages"></div>
+      <input type="text" id="chatInput" placeholder="Escribe un mensaje...">
+      <button onclick="sendMessage()">Enviar</button>
+      <button class="delete-btn" onclick="clearChat()">Borrar Chat</button>
+    </div>
+
+  </div>
 </div>
 
 <script>
-    let currentUser = null;
-    let clientNumber = Math.floor(Math.random() * 100) + 1;
+  let currentUser = null;
+  let chattingWith = null; // Solo para vendedor
 
-    function saveUser(username, password) {
-        localStorage.setItem('user_' + username, password);
-    }
+  function saveUser(username, password) {
+    localStorage.setItem('user_' + username, password);
+  }
 
-    function getUserPassword(username) {
-        return localStorage.getItem('user_' + username);
-    }
+  function getUserPassword(username) {
+    return localStorage.getItem('user_' + username);
+  }
 
-    function register() {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        if (username && password) {
-            if (getUserPassword(username)) {
-                alert('El usuario ya existe.');
-            } else {
-                saveUser(username, password);
-                alert('Registrado correctamente.');
-            }
-        } else {
-            alert('Rellena todos los campos.');
-        }
+  function register() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    if (username && password) {
+      if (getUserPassword(username)) {
+        alert('El usuario ya existe.');
+      } else {
+        saveUser(username, password);
+        alert('Registrado correctamente.');
+      }
+    } else {
+      alert('Rellena todos los campos.');
     }
+  }
 
-    function login() {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const savedPassword = getUserPassword(username);
-        if (password === savedPassword) {
-            currentUser = username;
-            localStorage.setItem('loggedInUser', username);
-            document.getElementById('auth').classList.add('hidden');
-            document.getElementById('main').classList.remove('hidden');
-            document.getElementById('welcome').innerText = `Bienvenido ${username}`;
-            loadChat();
-        } else {
-            alert('Usuario o contraseña incorrectos.');
-        }
+  function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const savedPassword = getUserPassword(username);
+    if (password === savedPassword) {
+      currentUser = username;
+      localStorage.setItem('loggedInUser', username);
+      document.getElementById('auth').classList.add('hidden');
+      document.getElementById('main').classList.remove('hidden');
+      document.getElementById('welcome').innerText = `Bienvenido ${username}`;
+      if (currentUser === 'sebi191937') {
+        document.getElementById('clients').classList.remove('hidden');
+        updateClientList();
+      }
+      loadChat();
+    } else {
+      alert('Usuario o contraseña incorrectos.');
     }
+  }
 
-    function logout() {
-        localStorage.removeItem('loggedInUser');
-        location.reload();
-    }
+  function logout() {
+    localStorage.removeItem('loggedInUser');
+    location.reload();
+  }
 
-    function showStore(type) {
-        document.getElementById('store-juego').classList.add('hidden');
-        document.getElementById('store-real').classList.add('hidden');
-        if (type === 'juego') {
-            document.getElementById('store-juego').classList.remove('hidden');
-        } else if (type === 'real') {
-            document.getElementById('store-real').classList.remove('hidden');
-        }
+  function showStore(type) {
+    document.getElementById('store-juego').classList.add('hidden');
+    document.getElementById('store-real').classList.add('hidden');
+    if (type === 'juego') {
+      document.getElementById('store-juego').classList.remove('hidden');
+    } else if (type === 'real') {
+      document.getElementById('store-real').classList.remove('hidden');
     }
+  }
 
-    function addToCart(item) {
-        let email = 'discordsebas15@gmail.com';
-        let subject = encodeURIComponent('Nuevo pedido');
-        let body = encodeURIComponent('Usuario: ' + currentUser + '\nProducto: ' + item);
-        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-    }
+  function addToCart(item) {
+    let email = 'discordsebas15@gmail.com';
+    let subject = encodeURIComponent('Nuevo pedido');
+    let body = encodeURIComponent('Usuario: ' + currentUser + '\nProducto: ' + item);
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  }
 
-    function sendMessage() {
-        const input = document.getElementById('chatInput');
-        const message = input.value.trim();
-        if (message !== '') {
-            const chatMessages = document.getElementById('chatMessages');
-            let role = 'Cliente' + clientNumber;
-            if (currentUser === 'sebi191937') {
-                role = 'Vendedor';
-            }
-            const newMessage = document.createElement('div');
-            newMessage.textContent = `${role} (${currentUser}): ${message}`;
-            chatMessages.appendChild(newMessage);
-            input.value = '';
-            saveChat();
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+  function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (message !== '') {
+      const chatKey = chattingWith ? `chat_${chattingWith}` : `chat_${currentUser}`;
+      const chatHistory = JSON.parse(localStorage.getItem(chatKey) || '[]');
+      chatHistory.push({ sender: currentUser, text: message, time: new Date().toLocaleTimeString() });
+      localStorage.setItem(chatKey, JSON.stringify(chatHistory));
+      input.value = '';
+      loadChat();
+      if (currentUser !== 'sebi191937') {
+        registerClient(currentUser);
+      }
     }
+  }
 
-    function saveChat() {
-        const chat = document.getElementById('chatMessages').innerHTML;
-        localStorage.setItem('chatHistory', chat);
-    }
+  function loadChat() {
+    const chatKey = chattingWith ? `chat_${chattingWith}` : `chat_${currentUser}`;
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML = '';
+    const chatHistory = JSON.parse(localStorage.getItem(chatKey) || '[]');
+    chatHistory.forEach(msg => {
+      const div = document.createElement('div');
+      div.textContent = `[${msg.time}] ${msg.sender}: ${msg.text}`;
+      chatMessages.appendChild(div);
+    });
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
 
-    function loadChat() {
-        const chat = localStorage.getItem('chatHistory');
-        if (chat) {
-            document.getElementById('chatMessages').innerHTML = chat;
-        }
+  function clearChat() {
+    if (confirm("¿Seguro que quieres borrar el chat?")) {
+      const chatKey = chattingWith ? `chat_${chattingWith}` : `chat_${currentUser}`;
+      localStorage.removeItem(chatKey);
+      loadChat();
     }
+  }
 
-    // Autologin
-    window.onload = function() {
-        const savedUser = localStorage.getItem('loggedInUser');
-        if (savedUser) {
-            currentUser = savedUser;
-            document.getElementById('auth').classList.add('hidden');
-            document.getElementById('main').classList.remove('hidden');
-            document.getElementById('welcome').innerText = `Bienvenido ${savedUser}`;
-            loadChat();
-        }
+  function registerClient(user) {
+    let clients = JSON.parse(localStorage.getItem('clients') || '[]');
+    if (!clients.includes(user)) {
+      clients.push(user);
+      localStorage.setItem('clients', JSON.stringify(clients));
+      updateClientList();
     }
+  }
+
+  function updateClientList() {
+    const clientList = document.getElementById('clientList');
+    clientList.innerHTML = '';
+    let clients = JSON.parse(localStorage.getItem('clients') || '[]');
+    clients.forEach(user => {
+      const btn = document.createElement('button');
+      btn.textContent = user;
+      btn.onclick = () => { chattingWith = user; loadChat(); };
+      clientList.appendChild(btn);
+    });
+  }
+
+  window.onload = function() {
+    const savedUser = localStorage.getItem('loggedInUser');
+    if (savedUser) {
+      currentUser = savedUser;
+      document.getElementById('auth').classList.add('hidden');
+      document.getElementById('main').classList.remove('hidden');
+      document.getElementById('welcome').innerText = `Bienvenido ${savedUser}`;
+      if (currentUser === 'sebi191937') {
+        document.getElementById('clients').classList.remove('hidden');
+        updateClientList();
+      }
+      loadChat();
+    }
+  }
 </script>
 
 </body>
 </html>
+
