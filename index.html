@@ -8,34 +8,68 @@
             background-color: #121212;
             color: #e0e0e0;
             font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
             text-align: center;
+            margin-bottom: 40px;
         }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
         .menu {
-            margin: 30px;
+            background: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+            flex: 1 1 300px;
+            max-width: 400px;
+            box-shadow: 0 0 10px #ff4b2b;
         }
+
         .menu h2 {
             margin-bottom: 15px;
         }
+
         .menu button {
             background: linear-gradient(45deg, #ff416c, #ff4b2b);
             border: none;
             padding: 10px 20px;
             color: white;
-            margin: 5px;
+            margin: 8px;
             border-radius: 10px;
             cursor: pointer;
             transition: 0.3s;
+            width: 100%;
         }
+
         .menu button:hover {
             transform: scale(1.05);
         }
+
         #cart {
-            margin-top: 30px;
+            margin: 40px auto 0;
             padding: 20px;
             background: #1e1e1e;
             border-radius: 10px;
             box-shadow: 0 0 10px #ff4b2b;
+            max-width: 600px;
         }
+
+        #cart h2 {
+            margin-bottom: 15px;
+        }
+
+        #cartItems {
+            text-align: left;
+        }
+
         #chatbox {
             background: #1f1f1f;
             padding: 15px;
@@ -45,9 +79,14 @@
             margin-bottom: 10px;
             box-shadow: inset 0 0 5px #ff4b2b;
         }
+
         #contact {
             margin-top: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
+
         input[type="text"] {
             padding: 10px;
             width: 80%;
@@ -55,6 +94,7 @@
             border: none;
             margin-bottom: 10px;
         }
+
         #notification {
             position: fixed;
             top: 20px;
@@ -67,8 +107,17 @@
             font-weight: bold;
             z-index: 999;
         }
+
         #notification.error {
             background: #ff4444;
+        }
+
+        /* Responsividad extra */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
@@ -78,20 +127,23 @@
 
     <h1>Bienvenido a la Tienda de Chips y Armas 🔥</h1>
 
-    <!-- Menú de compra por dinero del juego -->
-    <div class="menu">
-        <h2>Compra con Dinero del Juego</h2>
-        <p>Recuerda tener mínimo 16.8k en mano para recibir 12k exactos.</p>
-        <button onclick="addToCart('16 Chips (12k InGame)', 'Dinero Juego')">Comprar 16 Chips</button>
-        <button onclick="addToCart('Arma Especial', 'Dinero Juego')">Comprar Arma</button>
-    </div>
+    <!-- Menús separados -->
+    <div class="container">
+        <!-- Dinero del Juego -->
+        <div class="menu">
+            <h2>Compra con Dinero del Juego</h2>
+            <p>Recuerda tener mínimo 16.8k en mano para recibir 12k exactos.</p>
+            <button onclick="addToCart('16 Chips (12k InGame)', 'Dinero Juego')">Comprar 16 Chips</button>
+            <button onclick="addToCart('Arma Especial', 'Dinero Juego')">Comprar Arma</button>
+        </div>
 
-    <!-- Menú de compra por dinero real -->
-    <div class="menu">
-        <h2>Compra con Dinero Real</h2>
-        <p>16 Chips = 1 USD | Arma = 1 USD</p>
-        <button onclick="addToCart('16 Chips', 'Dinero Real')">Comprar 16 Chips</button>
-        <button onclick="addToCart('Arma Especial', 'Dinero Real')">Comprar Arma</button>
+        <!-- Dinero Real -->
+        <div class="menu">
+            <h2>Compra con Dinero Real</h2>
+            <p>16 Chips = 1 USD | Arma = 1 USD</p>
+            <button onclick="addToCart('16 Chips', 'Dinero Real')">Comprar 16 Chips</button>
+            <button onclick="addToCart('Arma Especial', 'Dinero Real')">Comprar Arma</button>
+        </div>
     </div>
 
     <!-- Carrito -->
@@ -119,9 +171,8 @@
         let userId;
         let cart = [];
 
-        // Inicializar EmailJS
         (function() {
-            emailjs.init("AQUÍ_TU_PUBLIC_KEY"); // 👈 Pega tu Public Key aquí
+            emailjs.init("AQUÍ_TU_PUBLIC_KEY"); // 👈 cambia aquí
         })();
 
         function addToCart(item, metodo) {
@@ -168,7 +219,6 @@
                 saveChat();
                 sendEmailNotification(message);
 
-                // Respuesta automática
                 setTimeout(() => {
                     let botMsg = document.createElement('div');
                     botMsg.style.margin = '5px 0';
