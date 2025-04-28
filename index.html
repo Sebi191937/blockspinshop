@@ -1,292 +1,129 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tienda Blockspin - Sebi191937</title>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #0d0d0d;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
-    .container {
-      padding: 20px;
-      max-width: 1000px;
-      margin: auto;
-    }
-    .hidden {
-      display: none;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 10px 5px;
-      background: linear-gradient(45deg, #00f2ff, #1bff8a);
-      border: none;
-      color: #000;
-      font-weight: bold;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      box-shadow: 0 0 10px #00ffe1, 0 0 20px #1bff8a;
-      transform: scale(1.05);
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #555;
-      background: #1a1a1a;
-      color: #fff;
-    }
-    .menu, .store, .chat, .clients {
-      margin-top: 20px;
-      background: #1a1a1a;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px #00ffe1;
-    }
-    .chat-messages {
-      background: #0d0d0d;
-      height: 300px;
-      overflow-y: scroll;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    .chat input {
-      width: 78%;
-      display: inline-block;
-    }
-    .chat button {
-      width: 20%;
-      display: inline-block;
-    }
-    .delete-btn {
-      background: red;
-      color: white;
-      margin-top: 10px;
-      width: 100%;
-    }
-    .logout-btn {
-      background: red;
-      color: white;
-    }
-    @media (max-width: 600px) {
-      .chat input, .chat button {
-        width: 100%;
-        margin-top: 5px;
-      }
-    }
-  </style>
-</head>
-<body>
+const adminUser = "sebi191937";
+let currentUser = null;
+let currentChat = null;
 
-<div class="container">
-  <!-- LOGIN / REGISTRO -->
-  <div id="auth" class="auth">
-    <h2>Inicia Sesión o Regístrate</h2>
-    <input type="text" id="username" placeholder="Usuario Roblox">
-    <input type="password" id="password" placeholder="Contraseña">
-    <button onclick="register()">Registrar</button>
-    <button onclick="login()">Iniciar Sesión</button>
-  </div>
+function saveUsers(users) {
+  localStorage.setItem("users", JSON.stringify(users));
+}
 
-  <!-- TIENDA Y CHAT -->
-  <div id="main" class="hidden">
-    <h2 id="welcome"></h2>
-    <button onclick="logout()" class="logout-btn">Cerrar sesión</button>
+function getUsers() {
+  return JSON.parse(localStorage.getItem("users")) || {};
+}
 
-    <div class="menu">
-      <button onclick="showStore('juego')">Dinero de Juego</button>
-      <button onclick="showStore('real')">Dinero Real</button>
-    </div>
+function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-    <!-- Tienda Dinero Juego -->
-    <div id="store-juego" class="store hidden">
-      <h3>Compra con Dinero del Juego</h3>
-      <p>16 Chips = 12k (Necesitas 16.8k en mano)</p>
-      <button onclick="addToCart('chips-juego')">Comprar Chips</button>
-      <p>Armas especiales - dinero de juego</p>
-      <button onclick="addToCart('armas-juego')">Comprar Armas</button>
-    </div>
-
-    <!-- Tienda Dinero Real -->
-    <div id="store-real" class="store hidden">
-      <h3>Compra con Dinero Real</h3>
-      <p>16 Chips = 1 dólar</p>
-      <button onclick="addToCart('chips-real')">Comprar Chips</button>
-      <p>Armas especiales - 1 dólar</p>
-      <button onclick="addToCart('armas-real')">Comprar Armas</button>
-    </div>
-
-    <!-- CLIENTES (solo para vendedor) -->
-    <div id="clients" class="clients hidden">
-      <h3>Clientes Activos</h3>
-      <div id="clientList"></div>
-    </div>
-
-    <!-- CHAT -->
-    <div class="chat">
-      <h3>Chat</h3>
-      <div id="chatMessages" class="chat-messages"></div>
-      <input type="text" id="chatInput" placeholder="Escribe un mensaje...">
-      <button onclick="sendMessage()">Enviar</button>
-      <button class="delete-btn" onclick="clearChat()">Borrar Chat</button>
-    </div>
-
-  </div>
-</div>
-
-<script>
-  let currentUser = null;
-  let chattingWith = null; // Solo para vendedor
-
-  function saveUser(username, password) {
-    localStorage.setItem('user_' + username, password);
+  if (!username || !password) {
+    document.getElementById("error").innerText = "Completa todos los campos.";
+    return;
   }
 
-  function getUserPassword(username) {
-    return localStorage.getItem('user_' + username);
+  const users = getUsers();
+  
+  if (!users[username]) {
+    users[username] = { password: password, messages: [] };
+    saveUsers(users);
   }
 
-  function register() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    if (username && password) {
-      if (getUserPassword(username)) {
-        alert('El usuario ya existe.');
-      } else {
-        saveUser(username, password);
-        alert('Registrado correctamente.');
-      }
-    } else {
-      alert('Rellena todos los campos.');
+  if (users[username].password === password) {
+    currentUser = username;
+    document.getElementById("login-container").classList.add("hidden");
+    document.getElementById("main-container").classList.remove("hidden");
+    document.getElementById("welcome").innerText = username === adminUser ? `Bienvenido Vendedor (${adminUser})` : `Bienvenido ${username}`;
+    
+    if (currentUser === adminUser) {
+      document.querySelector(".admin-only").classList.remove("hidden");
+      loadClients();
     }
+  } else {
+    document.getElementById("error").innerText = "Contraseña incorrecta.";
+  }
+}
+
+function logout() {
+  currentUser = null;
+  location.reload();
+}
+
+function showSection(sectionId) {
+  document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
+  document.getElementById(sectionId).classList.remove("hidden");
+}
+
+function addToCart(product, quantity) {
+  alert(`Producto añadido al carrito: ${product} x${quantity}`);
+  sendEmailNotification(product, quantity);
+}
+
+function sendEmailNotification(product, quantity) {
+  console.log(`Simulando envío a Gmail: ${product} x${quantity}`);
+}
+
+function sendMessage() {
+  const msgInput = document.getElementById("messageInput");
+  const msg = msgInput.value.trim();
+  if (!msg) return;
+
+  const users = getUsers();
+  if (!users[currentUser]) return;
+
+  users[currentUser].messages.push({ from: currentUser, text: msg });
+  saveUsers(users);
+
+  if (currentUser !== adminUser) {
+    registerClient(currentUser);
   }
 
-  function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const savedPassword = getUserPassword(username);
-    if (password === savedPassword) {
-      currentUser = username;
-      localStorage.setItem('loggedInUser', username);
-      document.getElementById('auth').classList.add('hidden');
-      document.getElementById('main').classList.remove('hidden');
-      document.getElementById('welcome').innerText = `Bienvenido ${username}`;
-      if (currentUser === 'sebi191937') {
-        document.getElementById('clients').classList.remove('hidden');
-        updateClientList();
-      }
-      loadChat();
-    } else {
-      alert('Usuario o contraseña incorrectos.');
-    }
-  }
+  msgInput.value = "";
+  loadMessages(currentChat || currentUser);
+  loadClients();
+}
 
-  function logout() {
-    localStorage.removeItem('loggedInUser');
-    location.reload();
-  }
+function loadMessages(user) {
+  currentChat = user;
+  const messagesDiv = document.getElementById("messages");
+  messagesDiv.innerHTML = "";
 
-  function showStore(type) {
-    document.getElementById('store-juego').classList.add('hidden');
-    document.getElementById('store-real').classList.add('hidden');
-    if (type === 'juego') {
-      document.getElementById('store-juego').classList.remove('hidden');
-    } else if (type === 'real') {
-      document.getElementById('store-real').classList.remove('hidden');
-    }
-  }
+  const users = getUsers();
+  const messages = users[user]?.messages || [];
 
-  function addToCart(item) {
-    let email = 'discordsebas15@gmail.com';
-    let subject = encodeURIComponent('Nuevo pedido');
-    let body = encodeURIComponent('Usuario: ' + currentUser + '\nProducto: ' + item);
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-  }
+  document.getElementById("chat-with").innerText = `Chateando con: ${user}`;
 
-  function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-    if (message !== '') {
-      const chatKey = chattingWith ? `chat_${chattingWith}` : `chat_${currentUser}`;
-      const chatHistory = JSON.parse(localStorage.getItem(chatKey) || '[]');
-      chatHistory.push({ sender: currentUser, text: message, time: new Date().toLocaleTimeString() });
-      localStorage.setItem(chatKey, JSON.stringify(chatHistory));
-      input.value = '';
-      loadChat();
-      if (currentUser !== 'sebi191937') {
-        registerClient(currentUser);
-      }
-    }
-  }
+  messages.forEach(m => {
+    const msgEl = document.createElement("div");
+    msgEl.innerText = `${m.from}: ${m.text}`;
+    messagesDiv.appendChild(msgEl);
+  });
+}
 
-  function loadChat() {
-    const chatKey = chattingWith ? `chat_${chattingWith}` : `chat_${currentUser}`;
-    const chatMessages = document.getElementById('chatMessages');
-    chatMessages.innerHTML = '';
-    const chatHistory = JSON.parse(localStorage.getItem(chatKey) || '[]');
-    chatHistory.forEach(msg => {
-      const div = document.createElement('div');
-      div.textContent = `[${msg.time}] ${msg.sender}: ${msg.text}`;
-      chatMessages.appendChild(div);
-    });
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
+function clearChat() {
+  const users = getUsers();
+  if (!currentChat) return;
+  users[currentChat].messages = [];
+  saveUsers(users);
+  loadMessages(currentChat);
+}
 
-  function clearChat() {
-    if (confirm("¿Seguro que quieres borrar el chat?")) {
-      const chatKey = chattingWith ? `chat_${chattingWith}` : `chat_${currentUser}`;
-      localStorage.removeItem(chatKey);
-      loadChat();
-    }
+function registerClient(username) {
+  let clients = JSON.parse(localStorage.getItem("clients")) || [];
+  if (!clients.includes(username)) {
+    clients.push(username);
+    localStorage.setItem("clients", JSON.stringify(clients));
   }
+}
 
-  function registerClient(user) {
-    let clients = JSON.parse(localStorage.getItem('clients') || '[]');
-    if (!clients.includes(user)) {
-      clients.push(user);
-      localStorage.setItem('clients', JSON.stringify(clients));
-      updateClientList();
-    }
-  }
+function loadClients() {
+  const clients = JSON.parse(localStorage.getItem("clients")) || [];
+  const clientsList = document.getElementById("clients");
+  clientsList.innerHTML = "";
 
-  function updateClientList() {
-    const clientList = document.getElementById('clientList');
-    clientList.innerHTML = '';
-    let clients = JSON.parse(localStorage.getItem('clients') || '[]');
-    clients.forEach(user => {
-      const btn = document.createElement('button');
-      btn.textContent = user;
-      btn.onclick = () => { chattingWith = user; loadChat(); };
-      clientList.appendChild(btn);
-    });
-  }
+  clients.forEach(client => {
+    const li = document.createElement("li");
+    li.innerText = client;
+    li.onclick = () => loadMessages(client);
+    clientsList.appendChild(li);
+  });
+}
 
-  window.onload = function() {
-    const savedUser = localStorage.getItem('loggedInUser');
-    if (savedUser) {
-      currentUser = savedUser;
-      document.getElementById('auth').classList.add('hidden');
-      document.getElementById('main').classList.remove('hidden');
-      document.getElementById('welcome').innerText = `Bienvenido ${savedUser}`;
-      if (currentUser === 'sebi191937') {
-        document.getElementById('clients').classList.remove('hidden');
-        updateClientList();
-      }
-      loadChat();
-    }
-  }
-</script>
-
-</body>
-</html>
 
