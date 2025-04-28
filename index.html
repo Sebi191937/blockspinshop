@@ -1,3 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Venta de Chips y Armas</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #333;
+      color: white;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #444;
+    }
+
+    nav button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: #666;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    nav button:hover {
+      background: #888;
+    }
+
+    section {
+      padding: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .product {
+      margin-bottom: 20px;
+    }
+
+    #login-container {
+      max-width: 300px;
+      margin: 100px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    #login-container input {
+      display: block;
+      width: 90%;
+      margin: 10px auto;
+      padding: 10px;
+    }
+
+    #chat-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    #client-list {
+      width: 30%;
+      background: #eee;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    #chat-area {
+      flex: 1;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    #messages {
+      height: 300px;
+      overflow-y: scroll;
+      background: white;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    #messages div {
+      margin-bottom: 5px;
+    }
+
+    @media (max-width: 768px) {
+      #chat-container {
+        flex-direction: column;
+      }
+      #client-list, #chat-area {
+        width: 100%;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+<div id="login-container">
+  <h2>Iniciar Sesión</h2>
+  <input type="text" id="username" placeholder="Usuario de Roblox">
+  <input type="password" id="password" placeholder="Contraseña">
+  <button onclick="login()">Iniciar sesión</button>
+  <p id="error"></p>
+</div>
+
+<div id="main-container" class="hidden">
+  <header>
+    <h1 id="welcome"></h1>
+    <button onclick="logout()">Cerrar sesión</button>
+  </header>
+
+  <nav>
+    <button onclick="showSection('realMoney')">Dinero Real</button>
+    <button onclick="showSection('gameMoney')">Dinero del Juego</button>
+    <button onclick="showSection('chat')">Chat</button>
+  </nav>
+
+  <section id="realMoney" class="hidden">
+    <h2>Comprar con Dinero Real</h2>
+    <div class="product">
+      <p>16 Chips = $1</p>
+      <button onclick="addToCart('chipsReal', 1)">Añadir al carrito</button>
+    </div>
+    <div class="product">
+      <p>Armas = $1 cada una</p>
+      <button onclick="addToCart('armasReal', 1)">Añadir al carrito</button>
+    </div>
+  </section>
+
+  <section id="gameMoney" class="hidden">
+    <h2>Comprar con Dinero del Juego</h2>
+    <div class="product">
+      <p>16 Chips = 12,000$</p>
+      <p>(Necesitas 16,800$ en mano)</p>
+      <button onclick="addToCart('chipsJuego', 1)">Añadir al carrito</button>
+    </div>
+    <div class="product">
+      <p>Armas = 12,000$ cada una</p>
+      <button onclick="addToCart('armasJuego', 1)">Añadir al carrito</button>
+    </div>
+  </section>
+
+  <section id="chat" class="hidden">
+    <div id="chat-container">
+      <div id="client-list" class="admin-only hidden">
+        <h3>Clientes Activos</h3>
+        <ul id="clients"></ul>
+      </div>
+      <div id="chat-area">
+        <h3 id="chat-with"></h3>
+        <div id="messages"></div>
+        <input type="text" id="messageInput" placeholder="Escribe un mensaje...">
+        <button onclick="sendMessage()">Enviar</button>
+        <button onclick="clearChat()">Borrar Chat</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
 const adminUser = "sebi191937";
 let currentUser = null;
 let currentChat = null;
@@ -125,5 +305,9 @@ function loadClients() {
     clientsList.appendChild(li);
   });
 }
+</script>
+
+</body>
+</html>
 
 
