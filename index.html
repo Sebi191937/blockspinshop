@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda Blockspin</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #1f1f1f;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            color: #ff0000;
+        }
+        .menu {
+            display: flex;
+            justify-content: center;
+            margin: 30px;
+            gap: 20px;
+        }
+        .menu button {
+            padding: 20px;
+            font-size: 18px;
+            background-color: #ff0000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+        }
+        .store {
+            display: none;
+            margin: 20px;
+        }
+        .item {
+            background-color: #1f1f1f;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .item button {
+            margin-top: 10px;
+            background-color: #ff0000;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+        }
+        #contact {
+            margin: 30px;
+            padding: 20px;
+            background-color: #1f1f1f;
+            border-radius: 10px;
+            display: none;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        input[type="submit"] {
+            background-color: #ff0000;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tienda Blockspin</h1>
+        <p>Compra Chips y Armas</p>
+    </header>
+
+    <div class="menu">
+        <button onclick="showStore('game')">Comprar con Dinero del Juego</button>
+        <button onclick="showStore('real')">Comprar con Dinero Real</button>
+    </div>
+
+    <div id="store-game" class="store">
+        <h2>Dinero del Juego</h2>
+        <div class="item">
+            <h3>16 Chips - 12k</h3>
+            <p><b>Necesitas tener 16.8k en mano.</b></p>
+            <button onclick="addToCart('16 Chips - Juego')">Añadir al Carrito</button>
+        </div>
+        <div class="item">
+            <h3>Arma Especial</h3>
+            <p>Precio: 12k (en el juego)</p>
+            <button onclick="addToCart('Arma Especial - Juego')">Añadir al Carrito</button>
+        </div>
+    </div>
+
+    <div id="store-real" class="store">
+        <h2>Dinero Real</h2>
+        <div class="item">
+            <h3>16 Chips - $1 USD</h3>
+            <button onclick="addToCart('16 Chips - Real')">Añadir al Carrito</button>
+        </div>
+        <div class="item">
+            <h3>Arma Especial - $1 USD</h3>
+            <button onclick="addToCart('Arma Especial - Real')">Añadir al Carrito</button>
+        </div>
+    </div>
+
+    <div id="contact">
+        <h2>Contacto</h2>
+        <p>Nos comunicaremos contigo aquí:</p>
+        <form action="https://formspree.io/f/{tu_form_id}" method="POST">
+            <input type="text" name="nombre" placeholder="Tu nombre" required>
+            <input type="email" name="email" placeholder="Tu correo" required>
+            <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
+            <input type="submit" value="Enviar">
+        </form>
+    </div>
+
+    <script>
+        function showStore(type) {
+            document.getElementById('store-game').style.display = 'none';
+            document.getElementById('store-real').style.display = 'none';
+            if (type === 'game') {
+                document.getElementById('store-game').style.display = 'block';
+            } else {
+                document.getElementById('store-real').style.display = 'block';
+            }
+        }
+
+        function addToCart(item) {
+            alert('Producto añadido: ' + item + '\nTe contactaremos en la sección de abajo.');
+            document.getElementById('contact').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
