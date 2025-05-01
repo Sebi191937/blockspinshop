@@ -1,313 +1,71 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Venta de Chips y Armas</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #333;
-      color: white;
-      padding: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      background: #444;
-    }
-
-    nav button {
-      padding: 10px 20px;
-      margin: 5px;
-      background: #666;
-      border: none;
-      color: white;
-      cursor: pointer;
-    }
-
-    nav button:hover {
-      background: #888;
-    }
-
-    section {
-      padding: 20px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .product {
-      margin-bottom: 20px;
-    }
-
-    #login-container {
-      max-width: 300px;
-      margin: 100px auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-
-    #login-container input {
-      display: block;
-      width: 90%;
-      margin: 10px auto;
-      padding: 10px;
-    }
-
-    #chat-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    #client-list {
-      width: 30%;
-      background: #eee;
-      padding: 10px;
-      border-radius: 10px;
-    }
-
-    #chat-area {
-      flex: 1;
-      background: #f9f9f9;
-      padding: 10px;
-      border-radius: 10px;
-    }
-
-    #messages {
-      height: 300px;
-      overflow-y: scroll;
-      background: white;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 5px;
-    }
-
-    #messages div {
-      margin-bottom: 5px;
-    }
-
-    @media (max-width: 768px) {
-      #chat-container {
-        flex-direction: column;
-      }
-      #client-list, #chat-area {
-        width: 100%;
-      }
-    }
-  </style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gana Dinero Viendo Anuncios</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f0f0f0; }
+        #login, #dashboard { max-width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        button { padding: 10px 20px; margin-top: 10px; }
+    </style>
 </head>
-
-<body>
-
-<div id="login-container">
-  <h2>Iniciar Sesión</h2>
-  <input type="text" id="username" placeholder="Usuario de Roblox">
-  <input type="password" id="password" placeholder="Contraseña">
-  <button onclick="login()">Iniciar sesión</button>
-  <p id="error"></p>
-</div>
-
-<div id="main-container" class="hidden">
-  <header>
-    <h1 id="welcome"></h1>
+<body><div id="login">
+    <h2>Iniciar Sesión</h2>
+    <input type="text" id="username" placeholder="Usuario"><br><br>
+    <input type="password" id="password" placeholder="Contraseña"><br><br>
+    <button onclick="login()">Entrar</button>
+</div><div id="dashboard" style="display:none;">
+    <h2>Bienvenido, <span id="userDisplay"></span></h2>
+    <p>Saldo actual: $<span id="balance">0.00</span></p>
+    <p>Anuncios vistos: <span id="adsWatched">0</span></p>
+    <button onclick="watchAd()">Ver Anuncio</button>
+    <br><br>
     <button onclick="logout()">Cerrar sesión</button>
-  </header>
+</div><script>
+    const users = {}; // Simulación local para guardar datos por usuario
 
-  <nav>
-    <button onclick="showSection('realMoney')">Dinero Real</button>
-    <button onclick="showSection('gameMoney')">Dinero del Juego</button>
-    <button onclick="showSection('chat')">Chat</button>
-  </nav>
+    function login() {
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
 
-  <section id="realMoney" class="hidden">
-    <h2>Comprar con Dinero Real</h2>
-    <div class="product">
-      <p>16 Chips = $1</p>
-      <button onclick="addToCart('chipsReal', 1)">Añadir al carrito</button>
-    </div>
-    <div class="product">
-      <p>Armas = $1 cada una</p>
-      <button onclick="addToCart('armasReal', 1)">Añadir al carrito</button>
-    </div>
-  </section>
-
-  <section id="gameMoney" class="hidden">
-    <h2>Comprar con Dinero del Juego</h2>
-    <div class="product">
-      <p>16 Chips = 12,000$</p>
-      <p>(Necesitas 16,800$ en mano)</p>
-      <button onclick="addToCart('chipsJuego', 1)">Añadir al carrito</button>
-    </div>
-    <div class="product">
-      <p>Armas = 12,000$ cada una</p>
-      <button onclick="addToCart('armasJuego', 1)">Añadir al carrito</button>
-    </div>
-  </section>
-
-  <section id="chat" class="hidden">
-    <div id="chat-container">
-      <div id="client-list" class="admin-only hidden">
-        <h3>Clientes Activos</h3>
-        <ul id="clients"></ul>
-      </div>
-      <div id="chat-area">
-        <h3 id="chat-with"></h3>
-        <div id="messages"></div>
-        <input type="text" id="messageInput" placeholder="Escribe un mensaje...">
-        <button onclick="sendMessage()">Enviar</button>
-        <button onclick="clearChat()">Borrar Chat</button>
-      </div>
-    </div>
-  </section>
-
-</div>
-
-<script>
-const adminUser = "sebi191937";
-let currentUser = null;
-let currentChat = null;
-
-function saveUsers(users) {
-  localStorage.setItem("users", JSON.stringify(users));
-}
-
-function getUsers() {
-  return JSON.parse(localStorage.getItem("users")) || {};
-}
-
-function login() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if (!username || !password) {
-    document.getElementById("error").innerText = "Completa todos los campos.";
-    return;
-  }
-
-  const users = getUsers();
-  
-  if (!users[username]) {
-    users[username] = { password: password, messages: [] };
-    saveUsers(users);
-  }
-
-  if (users[username].password === password) {
-    currentUser = username;
-    document.getElementById("login-container").classList.add("hidden");
-    document.getElementById("main-container").classList.remove("hidden");
-    document.getElementById("welcome").innerText = username === adminUser ? `Bienvenido Vendedor (${adminUser})` : `Bienvenido ${username}`;
-    
-    if (currentUser === adminUser) {
-      document.querySelector(".admin-only").classList.remove("hidden");
-      loadClients();
+        if (user && pass) {
+            if (!users[user]) {
+                users[user] = { balance: 0, adsWatched: 0 };
+            }
+            sessionStorage.setItem('currentUser', user);
+            updateDashboard();
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+        } else {
+            alert('Por favor, ingresa usuario y contraseña.');
+        }
     }
-  } else {
-    document.getElementById("error").innerText = "Contraseña incorrecta.";
-  }
-}
 
-function logout() {
-  currentUser = null;
-  location.reload();
-}
+    function updateDashboard() {
+        const user = sessionStorage.getItem('currentUser');
+        if (user && users[user]) {
+            document.getElementById('userDisplay').textContent = user;
+            document.getElementById('balance').textContent = users[user].balance.toFixed(2);
+            document.getElementById('adsWatched').textContent = users[user].adsWatched;
+        }
+    }
 
-function showSection(sectionId) {
-  document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
-  document.getElementById(sectionId).classList.remove("hidden");
-}
+    function watchAd() {
+        const user = sessionStorage.getItem('currentUser');
+        if (user && users[user]) {
+            users[user].adsWatched += 1;
+            users[user].balance += 0.01; // Suma simulada por anuncio
+            updateDashboard();
+            alert('Anuncio visto. ¡Ganaste $0.01!');
+        }
+    }
 
-function addToCart(product, quantity) {
-  alert(`Producto añadido al carrito: ${product} x${quantity}`);
-  sendEmailNotification(product, quantity);
-}
-
-function sendEmailNotification(product, quantity) {
-  console.log(`Simulando envío a Gmail: ${product} x${quantity}`);
-}
-
-function sendMessage() {
-  const msgInput = document.getElementById("messageInput");
-  const msg = msgInput.value.trim();
-  if (!msg) return;
-
-  const users = getUsers();
-  if (!users[currentUser]) return;
-
-  users[currentUser].messages.push({ from: currentUser, text: msg });
-  saveUsers(users);
-
-  if (currentUser !== adminUser) {
-    registerClient(currentUser);
-  }
-
-  msgInput.value = "";
-  loadMessages(currentChat || currentUser);
-  loadClients();
-}
-
-function loadMessages(user) {
-  currentChat = user;
-  const messagesDiv = document.getElementById("messages");
-  messagesDiv.innerHTML = "";
-
-  const users = getUsers();
-  const messages = users[user]?.messages || [];
-
-  document.getElementById("chat-with").innerText = `Chateando con: ${user}`;
-
-  messages.forEach(m => {
-    const msgEl = document.createElement("div");
-    msgEl.innerText = `${m.from}: ${m.text}`;
-    messagesDiv.appendChild(msgEl);
-  });
-}
-
-function clearChat() {
-  const users = getUsers();
-  if (!currentChat) return;
-  users[currentChat].messages = [];
-  saveUsers(users);
-  loadMessages(currentChat);
-}
-
-function registerClient(username) {
-  let clients = JSON.parse(localStorage.getItem("clients")) || [];
-  if (!clients.includes(username)) {
-    clients.push(username);
-    localStorage.setItem("clients", JSON.stringify(clients));
-  }
-}
-
-function loadClients() {
-  const clients = JSON.parse(localStorage.getItem("clients")) || [];
-  const clientsList = document.getElementById("clients");
-  clientsList.innerHTML = "";
-
-  clients.forEach(client => {
-    const li = document.createElement("li");
-    li.innerText = client;
-    li.onclick = () => loadMessages(client);
-    clientsList.appendChild(li);
-  });
-}
-</script>
-
-</body>
+    function logout() {
+        sessionStorage.removeItem('currentUser');
+        document.getElementById('login').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+    }
+</script></body>
 </html>
 
 
