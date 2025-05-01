@@ -5,11 +5,17 @@
     <title>Gana Dinero Viendo Anuncios</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f0f0f0; }
-        #login, #dashboard { max-width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        #login, #register, #dashboard { max-width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         button { padding: 10px 20px; margin-top: 10px; }
     </style>
 </head>
-<body><div id="login">
+<body><div id="register">
+    <h2>Registrar Cuenta</h2>
+    <input type="text" id="regUsername" placeholder="Usuario"><br><br>
+    <input type="password" id="regPassword" placeholder="Contraseña"><br><br>
+    <button onclick="register()">Registrar</button>
+    <p>¿Ya tienes cuenta? <a href="#" onclick="showLogin()">Iniciar sesión</a></p>
+</div><div id="login" style="display:none;">
     <h2>Iniciar Sesión</h2>
     <input type="text" id="username" placeholder="Usuario"><br><br>
     <input type="password" id="password" placeholder="Contraseña"><br><br>
@@ -18,31 +24,61 @@
     <h2>Bienvenido, <span id="userDisplay"></span></h2>
     <p>Saldo actual: $<span id="balance">0.00</span></p>
     <p>Anuncios vistos: <span id="adsWatched">0</span></p>
-    <button onclick="watchAd()">Ver Anuncio</button>
-    <br><br>
+    <button id="watchAdBtn" onclick="startAd()">Ver Anuncio</button>
+    <p id="adTimer" style="margin-top:10px; color:green;"></p>
+    <br>
     <button onclick="logout()">Cerrar sesión</button>
 </div><script>
-    const users = {}; // Simulación local para guardar datos por usuario
+    function saveUsers(users) {
+        localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    function getUsers() {
+        return JSON.parse(localStorage.getItem('users')) || {};
+    }
+
+    function register() {
+        const user = document.getElementById('regUsername').value;
+        const pass = document.getElementById('regPassword').value;
+        const users = getUsers();
+
+        if (user && pass) {
+            if (users[user]) {
+                alert('El usuario ya existe.');
+            } else {
+                users[user] = { password: pass, balance: 0, adsWatched: 0 };
+                saveUsers(users);
+                alert('Registro exitoso. Ahora inicia sesión.');
+                showLogin();
+            }
+        } else {
+            alert('Completa todos los campos.');
+        }
+    }
+
+    function showLogin() {
+        document.getElementById('register').style.display = 'none';
+        document.getElementById('login').style.display = 'block';
+    }
 
     function login() {
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
+        const users = getUsers();
 
-        if (user && pass) {
-            if (!users[user]) {
-                users[user] = { balance: 0, adsWatched: 0 };
-            }
+        if (users[user] && users[user].password === pass) {
             sessionStorage.setItem('currentUser', user);
             updateDashboard();
             document.getElementById('login').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
         } else {
-            alert('Por favor, ingresa usuario y contraseña.');
+            alert('Usuario o contraseña incorrectos.');
         }
     }
 
     function updateDashboard() {
         const user = sessionStorage.getItem('currentUser');
+        const users = getUsers();
         if (user && users[user]) {
             document.getElementById('userDisplay').textContent = user;
             document.getElementById('balance').textContent = users[user].balance.toFixed(2);
@@ -50,21 +86,53 @@
         }
     }
 
-    function watchAd() {
+    function startAd() {
+        const btn = document.getElementById('watchAdBtn');
+        const adTimer = document.getElementById('adTimer');
+
+        btn.disabled = true;
+        let timeLeft = 10; // 10 segundos simulando anuncio
+        adTimer.textContent = 'Viendo anuncio... (' + timeLeft + 's)';
+
+        const timer = setInterval(() => {
+            timeLeft--;
+            adTimer.textContent = 'Viendo anuncio... (' + timeLeft + 's)';
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                adTimer.textContent = '¡Anuncio finalizado!';
+                finishAd();
+                btn.disabled = false;
+            }
+        }, 1000);
+    }
+
+    function finishAd() {
         const user = sessionStorage.getItem('currentUser');
+        const users = getUsers();
         if (user && users[user]) {
             users[user].adsWatched += 1;
-            users[user].balance += 0.01; // Suma simulada por anuncio
+            users[user].balance += 0.01;
+            saveUsers(users);
             updateDashboard();
-            alert('Anuncio visto. ¡Ganaste $0.01!');
+            alert('Ganaste $0.01 después de ver el anuncio completo.');
         }
     }
 
     function logout() {
         sessionStorage.removeItem('currentUser');
-        document.getElementById('login').style.display = 'block';
-        document.getElementById('dashboard').style.display = 'none';
+        location.reload();
     }
+
+    // Auto-login if session exists
+    window.onload = () => {
+        const user = sessionStorage.getItem('currentUser');
+        const users = getUsers();
+        if (user && users[user]) {
+            document.getElementById('register').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            updateDashboard();
+        }
+    };
 </script></body>
 </html>
 
